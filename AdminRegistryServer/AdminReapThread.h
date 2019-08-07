@@ -29,17 +29,17 @@ using namespace tars;
 class AdminReapThread : public TC_Thread, public TC_ThreadLock
 {
 public:
-    /*
+    /**
     * 初始化函数
     */
     AdminReapThread();
 
-    /*
+    /**
     * 析构函数
     */
     ~AdminReapThread();
 
-    /*
+    /**
      * 结束线程
      */
     void terminate();

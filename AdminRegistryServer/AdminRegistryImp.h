@@ -25,7 +25,7 @@
 using namespace tars;
 
 /**
- * 管理控制接口类
+ * 管理主控接口类
  */
 class AdminRegistryImp: public AdminReg
 {
@@ -47,11 +47,14 @@ public:
 
 public:
 
+    /***********任务管理****************/
     /**
+     * 请求执行任务
+     *
+     * @param taskReq : 任务列表信息
+     * @param current : 上下文信息
      * 
-     * @param taskList 
-     * 
-     * @return string, TaskNo
+     * @return  0-成功 others-失败
      */
    virtual int addTaskReq(const TaskReq &taskReq, tars::TarsCurrentPtr current);
 
@@ -59,168 +62,137 @@ public:
      * 获取任务状态
      *
      * @param taskNo : 任务列表id
+     * @param current : 上下文信息
+     * @param out taskRsp : 任务状态
      *
-     * @return 任务状态
+     * @return  0-成功 others-失败
      */
     virtual int getTaskRsp(const string &taskNo, TaskRsp &taskRsp, tars::TarsCurrentPtr current);
 
     /**
-     * 获取TaskRsp信息
+     * 获取历史任务列表信息
      * 
-     * @param application 
-     * @param serverName 
-     * @param command 
-     * @param current 
-     * 
-     * @return vector<TaskRsp> 
+     * @param application : 应用名
+     * @param serverName : 服务名
+     * @param command : 操作
+     * @return vector<TaskRsp> : 历史任务列表信息
+     * @param current : 上下文信息
+     *
+     * @return  0-成功 others-失败
      */
     virtual int getTaskHistory(const string & application, const string & serverName, const string & command, vector<TaskRsp> &taskRsp, tars::TarsCurrentPtr current);
 
     /**
-     * 设置任务状态
+     * 更新任务状态
      * 
-     * @param itemNo 
-     * @param startTime 
-     * @param endTime 
-     * @param status 
-     * @param log 
-     * @param current 
+     * @param itemNo : 子任务编号
+     * @param info : 更新任务详情信息，包括如下字段: 
+     *  startTime : 任务开始执行时间
+     *  endTime : 任务完成时间
+     *  status : 任务状态
+     *  log : 备注信息
+     * @param current : 上下文信息
      * 
-     * @return int 
+     * @return  0-成功 others-失败
      */
     virtual int setTaskItemInfo(const string & itemNo, const map<string, string> &info, tars::TarsCurrentPtr current);
 
-    /***********application****************/
+    /***********服务管理****************/
     /**
      * 卸载服务
      * 
-     * @param application 
-     * @param serverName 
-     * @param nodeName 
-     * @param current 
+     * @param application : 应用名
+     * @param serverName : 服务名
+     * @param nodeName : 节点名
+     * @param user : 操作用户名
+     * @param log : 备注信息
+     * @param current : 上下文信息
      * 
-     * @return int 
+     * @return  0-成功 others-失败
      */
     virtual int undeploy(const string & application, const string & serverName, const string & nodeName, const string &user, string &log, tars::TarsCurrentPtr current);
 
     /**
-     * 获取application列表
+     * 获取应用名列表
      *
-     * @param null
      * @param out result : 结果描述
+     * @param current : 上下文信息
      *
-     * @return application列表
+     * @return vector<string> : 应用名列表
      */
     virtual vector<string> getAllApplicationNames(string &result, tars::TarsCurrentPtr current);
 
-
-    /***********node****************/
-
     /**
-     * 获取node列表
+     * 获取服务列表
      *
-     * @param null
      * @param out result : 结果描述
+     * @param current : 上下文信息
      *
-     * @return node 列表
-     */
-    virtual vector<string> getAllNodeNames(string &result, tars::TarsCurrentPtr current);
-
-    /**
-     * 获取node版本
-     * @param name   node名称
-     * @param version   node版本
-     * @param out result 结果描述
-     * @return  0-成功 others-失败
-     */
-    virtual int getNodeVesion(const string &nodeName, string &version, string & result, tars::TarsCurrentPtr current);
-
-    /**
-     * ping node
-     *
-     * @param name: node id
-     * @param out result : 结果描述
-     *
-     * @return : true-ping通；false-不通
-     */
-    virtual bool pingNode(const string & name, string &result, tars::TarsCurrentPtr current);
-
-    /**
-     * 停止 node
-     *
-     * @param name: node id
-     * @param out result : 结果描述
-     *
-     * @return : 0-成功 others-失败
-     */
-    virtual int shutdownNode(const string & name, string &result, tars::TarsCurrentPtr current);
-
-    /**
-     * 获取server列表
-     *
-     * @param name: null
-     * @param out result : 结果描述
-     *
-     * @return: server列表及相关信息
+     * @return vector<vector<string> > : 服务列表
      */
     virtual vector<vector<string> > getAllServerIds(string &result, tars::TarsCurrentPtr current);
 
     /**
-     * 获取特定server状态
+     * 获取特定服务状态
      *
-     * @param application: 应用
-     * @param serverName : server名
-     * @param nodeNmae   : node id
-     * @param out state  : 状态
+     * @param application : 应用名
+     * @param serverName : 服务名
+     * @param nodeNmae : 节点名
+     * @param out state : 状态
      * @param out result : 结果描述
+     * @param current : 上下文信息
      *
-     * @return : 处理结果
+     * @return int : 处理结果，EM_TARS_SUCCESS-成功；其他失败
      */
     virtual int getServerState(const string & application, const string & serverName, const string & nodeName, ServerStateDesc &state, string &result, tars::TarsCurrentPtr current);
 
      /**
      * 获取特定ip所属group
      *
-     * @param sting: ip
-     * @param out int  : group id
+     * @param ip : 服务ip
+     * @param out int : 服务所在属组标识
      * @param out result : 结果描述
+     * @param current : 上下文信息
      *
-     * @return : 处理结果
+     * @return int : 处理结果，>=0 - 所属组标识，其他失败
      */
 
-    virtual int getGroupId(const string & ip,int &groupId, string &result, tars::TarsCurrentPtr current);
+    virtual int getGroupId(const string & ip, int &groupId, string &result, tars::TarsCurrentPtr current);
 
     /**
-     * 启动特定server
+     * 启动服务
      *
-     * @param application: 应用
-     * @param serverName : server名
-     * @param nodeName   : node id
+     * @param application : 应用名
+     * @param serverName : 服务名
+     * @param nodeName   : 节点名
      * @param out result : 结果描述
+     * @param current : 上下文信息
      *
      * @return : 0-成功 others-失败
      */
     virtual int startServer(const string & application, const string & serverName, const string & nodeName, string &result, tars::TarsCurrentPtr current);
 
     /**
-     * 停止特定server
+     * 停止服务
      *
-     * @param application: 应用
-     * @param serverName : server名
-     * @param nodeName   : node id
+     * @param application: 应用名
+     * @param serverName : 服务名
+     * @param nodeName   : 节点名
      * @param out result : 结果描述
+     * @param current : 上下文信息
      *
      * @return : 0-成功 others-失败
      */
     virtual int stopServer(const string & application, const string & serverName, const string & nodeName, string &result, tars::TarsCurrentPtr current);
 
     /**
-     * 重启特定server
+     * 重启服务
      *
-     * @param application: 应用
-     * @param serverName : server名
-     * @param nodeName   : node id
+     * @param application: 应用名
+     * @param serverName : 服务名
+     * @param nodeName   : 节点名
      * @param out result : 结果描述
+     * @param current : 上下文信息
      *
      * @return : 0-成功 others-失败
      */
@@ -228,77 +200,130 @@ public:
 
     /**
      * 通知服务
-     * @param application
-     * @param serverName
-     * @param nodeName
-     * @param command
-     * @param result
-     * @param current
      *
-     * @return int
+     * @param application: 应用名
+     * @param serverName : 服务名
+     * @param nodeName   : 节点名
+     * @param command   : 操作命令
+     * @param out result : 结果描述
+     * @param current : 上下文信息
+     *
+     * @return : 0-成功 others-失败
      */
     virtual int notifyServer(const string & application, const string & serverName, const string & nodeName, const string &command, string &result, tars::TarsCurrentPtr current);
 
     /**
-     * 批量发布
+     * 加载服务信息
      *
-     * @param PatchRequest : 发布请求
-     * @param out result   : 结果描述
-     *
-     * @return : 0-成功 others-失败
-     */
-    virtual int batchPatch(const tars::PatchRequest & req, string &result, tars::TarsCurrentPtr current);
-
-    /**
-     * 发布成功
-     * 
-     * @param req 
-     * @param result 
-     * @param current 
-     * 
-     * @return int 
-     */
-    virtual int updatePatchLog(const string &application, const string & serverName, const string & nodeName, const string & patchId, const string & user, const string &patchType, bool succ, tars::TarsCurrentPtr current);
-
-    /**
-    * 获取服务发布进度
-    * @param application  服务所属应用名
-    * @param serverName  服务名
-    * @param nodeName   :node id
-    * @out tPatchInfo  :发布百分比
-    * @return :0-成功 others-失败
-    */
-    virtual int getPatchPercent(const string &application, const string &serverName,const string & nodeName, PatchInfo &tPatchInfo, tars::TarsCurrentPtr current);
-
-    /**
-     * 加载特定server
-     *
-     * @param application: 应用
-     * @param serverName : server名
-     * @param nodeName   : node id
+     * @param application: 应用名
+     * @param serverName : 服务名
+     * @param nodeName   : 节点名
      * @param out result : 结果描述
      *
      * @return : 0-成功 others-失败
      */
     virtual int loadServer(const string & application, const string & serverName, const string & nodeName, string &result, tars::TarsCurrentPtr current);
 
+    /***********节点管理****************/
     /**
-     * 获取相应模板
+     * 获取节点名列表
      *
-     * @param profileName: 模板名称
+     * @param out result : 结果描述
+     * @param current : 上下文信息
+     *
+     * @return vector<string> : 节点名列表
+     */
+    virtual vector<string> getAllNodeNames(string &result, tars::TarsCurrentPtr current);
+
+    /**
+     * 获取节点版本
+     *
+     * @param nodeName : 节点名
+     * @param out version : 节点版本
+     * @param out result : 结果描述
+     * @param current : 上下文信息
+     *
+     * @return  0-成功 others-失败
+     */
+    virtual int getNodeVesion(const string &nodeName, string &version, string & result, tars::TarsCurrentPtr current);
+
+    /**
+     * ping节点
+     *
+     * @param name : 节点名
+     * @param out result : 结果描述
+     * @param current : 上下文信息
+     *
+     * @return : true-ping通；false-不通
+     */
+    virtual bool pingNode(const string & name, string &result, tars::TarsCurrentPtr current);
+
+    /**
+     * 停止节点
+     *
+     * @param name : 节点名
+     * @param out result : 结果描述
+     * @param current : 上下文信息
+     *
+     * @return : 0-成功 others-失败
+     */
+    virtual int shutdownNode(const string & name, string &result, tars::TarsCurrentPtr current);
+
+    /***********发布管理****************/
+    /**
+     * 批量发布
+     *
+     * @param req : 发布请求
+     * @param out result : 结果描述
+     * @param current : 上下文信息
+     *
+     * @return : 0-成功 others-失败
+     */
+    virtual int batchPatch(const tars::PatchRequest & req, string &result, tars::TarsCurrentPtr current);
+
+    /**
+     * 更新发布状态
+     * 
+     * @param req 
+     * @param result 
+     * @param current : 上下文信息
+     * 
+     * @return : 0-成功 others-失败
+     */
+    virtual int updatePatchLog(const string &application, const string & serverName, const string & nodeName, const string & patchId, const string & user, const string &patchType, bool succ, tars::TarsCurrentPtr current);
+
+    /**
+    * 获取发布进度
+    *
+    * @param application : 应用名
+    * @param serverName  : 服务名
+    * @param nodeName    : 节点名
+    * @out tPatchInfo    : 发布进度信息
+    * @param current : 上下文信息
+    *
+    * @return : 0-成功 others-失败
+    */
+    virtual int getPatchPercent(const string &application, const string &serverName,const string & nodeName, PatchInfo &tPatchInfo, tars::TarsCurrentPtr current);
+
+    /***********配置模板管理****************/
+    /**
+     * 获取模板信息
+     *
+     * @param profileName : 模板名称
      * @param out profileTemplate: 模板内容
      * @param out resultDesc: 结果描述
+     * @param current : 上下文信息
      *
      * @return : 0-成功 others-失败
      */
     virtual int getProfileTemplate(const std::string & profileName,std::string &profileTemplate, std::string & resultDesc, tars::TarsCurrentPtr current);
 
     /**
-     * 获取务服相应模板
+     * 获取服务模板信息
      *
-     * @param application: 应用
-     * @param serverName : server名
-     * @param nodeName   : node id
+     * @param application : 应用名
+     * @param serverName  : 服务名
+     * @param nodeName    : 节点名
      * @param out profileTemplate: 模板内容
      * @param out resultDesc: 结果描述
      *
@@ -308,6 +333,7 @@ public:
 
     /**
      * node通过接口获取连接上主控的node ip
+     *
      * @param sNodeIp:  node 的ip
      *
      * @return 0-成功 others-失败
@@ -315,11 +341,13 @@ public:
     virtual int getClientIp(std::string &sClientIp,tars::TarsCurrentPtr current);
 
     virtual int gridPatchServer(const vector<ServerGridDesc> &gridDescList, vector<ServerGridDesc> &gridFailDescList, std::string & resultDesc, tars::TarsCurrentPtr current);
+
 protected:
 
     //数据库操作类对象
     DbProxy _db;
 
+    //发布代理
     PatchPrx _patchPrx;
 };
 
@@ -427,7 +455,6 @@ private:
     tars::TarsCurrentPtr _current;
 };
 
-
 class GetPatchPercentCallbackImp: public NodePrxCallback
 {
 public:
@@ -448,6 +475,5 @@ private:
     string _nodeName;
     tars::TarsCurrentPtr _current;
 };
-
 
 #endif

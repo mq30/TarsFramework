@@ -801,23 +801,19 @@ int DbProxy::checkRegistryTimeout(unsigned uTimeout)
 {
     try
     {
-        string sql =
-                      "update t_registry_info "
-                      "set present_state='inactive' "
-                      "where last_heartbeat < date_sub(now(), INTERVAL " + tars::TC_Common::tostr(uTimeout) + " SECOND)";
+        string sql = "update t_registry_info set present_state='inactive' "
+                     "where last_heartbeat < date_sub(now(), INTERVAL " + tars::TC_Common::tostr(uTimeout) + " SECOND)";
 
         _mysqlReg.execute(sql);
         TLOGDEBUG(__FUNCTION__ << " (" << uTimeout  << "s) affected:" << _mysqlReg.getAffectedRows() << endl);
 
         return _mysqlReg.getAffectedRows();
-
     }
     catch (TC_Mysql_Exception& ex)
     {
         TLOGERROR(__FUNCTION__ << " exception: " << ex.what() << endl);
         return -1;
     }
-
 }
 
 int DbProxy::updateRegistryInfo2Db(bool bRegHeartbeatOff)
@@ -880,13 +876,12 @@ int DbProxy::loadIPPhysicalGroupInfo()
         string sql = "select group_id,ip_order,allow_ip_rule,denny_ip_rule,group_name from t_server_group_rule "
                       "order by group_id";
         tars::TC_Mysql::MysqlData res = _mysqlReg.queryRecord(sql);
-        TLOGDEBUG(__FUNCTION__ << " get server group from db, records affected:" << res.size() << endl);
 
+        TLOGDEBUG(__FUNCTION__ << " get server group from db, records affected:" << res.size() << endl);
 
         TC_ThreadLock::Lock lock(_mutex);
         _serverGroupRule.clear();
         _serverGroupRule = res.data();
-
         _serverGroupCache.clear();  //规则改变 清除以前缓存
     }
     catch (TC_Mysql_Exception& ex)
@@ -895,8 +890,9 @@ int DbProxy::loadIPPhysicalGroupInfo()
     }
     catch (exception& ex)
     {
-        TLOGERROR(__FUNCTION__ << " " << ex.what() << endl);
+        TLOGERROR(__FUNCTION__ << " exception: " << ex.what() << endl);
     }
+
     return -1;
 }
 

@@ -34,7 +34,6 @@ AdminReapThread::~AdminReapThread()
     }
 }
 
-
 int AdminReapThread::init()
 {
     TLOGDEBUG("begin AdminReapThread init"<<endl);
@@ -48,11 +47,11 @@ int AdminReapThread::init()
     _updateInterval = _updateInterval < 5 ? 5 : _updateInterval;
 
     //管理主控心跳超时时间
-    _timeout = TC_Common::strto<int>((*g_pconf)["/tars/reap<registryTimeout>"]);
-    _timeout       = _timeout < 5 ? 5 : _timeout;
+    _timeout = TC_Common::strto<int>((*g_pconf).get("/tars/reap<registryTimeout>", "150"));
+    _timeout = _timeout < 5 ? 5 : _timeout;
 
     //是否关闭更新管理主控心跳时间,一般需要迁移时，设置此项为Y
-    _heartBeatOff = (*g_pconf).get("/tars/reap<heartbeatoff>", "N") == "Y"?true:false;
+    _heartBeatOff = (*g_pconf).get("/tars/reap<heartbeatoff>", "N") == "Y"? true : false;
 
     _db.updateRegistryInfo2Db(_heartBeatOff);
     _db.loadIPPhysicalGroupInfo();
@@ -64,7 +63,7 @@ int AdminReapThread::init()
 
 void AdminReapThread::terminate()
 {
-    TLOGDEBUG("[ReapThread terminate.]" << endl);
+    TLOGDEBUG("[AdminReapThread terminate.]" << endl);
     _terminate = true;
 }
 
@@ -95,7 +94,7 @@ void AdminReapThread::run()
             }
 
             TC_ThreadLock::Lock lock(*this);
-            timedWait(100); //ms
+            timedWait(100);//ms
         }
         catch(exception & ex)
         {
@@ -103,10 +102,7 @@ void AdminReapThread::run()
         }
         catch(...)
         {
-            TLOGERROR("AdminReapThread unknown exception:" << endl);
+            TLOGERROR("AdminReapThread unknown exception" << endl);
         }
     }
 }
-
-
-
