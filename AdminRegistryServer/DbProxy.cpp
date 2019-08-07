@@ -755,26 +755,20 @@ NodePrx DbProxy::getNodePrx(const string& nodeName)
             return _mapNodePrxCache[nodeName];
         }
 
-        string sql =
-                      "select node_obj "
-                      "from t_node_info "
-                      "where node_name='" + _mysqlReg.escapeString(nodeName) + "' and present_state='active'";
-
+        string sql = "select node_obj from t_node_info where node_name='" + _mysqlReg.escapeString(nodeName) + "' and present_state='active'";
         tars::TC_Mysql::MysqlData res = _mysqlReg.queryRecord(sql);
-        TLOGDEBUG(__FUNCTION__ << " '" << nodeName << "' affected:" << res.size() << endl);
 
+        TLOGDEBUG(__FUNCTION__ << " '" << nodeName << "' affected:" << res.size() << endl);
         if (res.size() == 0)
         {
-            throw TarsNodeNotRegistryException("node '" + nodeName + "' not registered  or heartbeart timeout,please check for it");
+            throw TarsNodeNotRegistryException("node '" + nodeName + "' not registered  or heartbeart timeout, please check for it");
         }
 
         NodePrx nodePrx;
         g_app.getCommunicator()->stringToProxy(res[0]["node_obj"], nodePrx);
-
         _mapNodePrxCache[nodeName] = nodePrx;
 
         return nodePrx;
-
     }
     catch (TC_Mysql_Exception& ex)
     {

@@ -20,7 +20,8 @@
 定时加载物理分组信息到缓存        |
 定时更新所有主控状态              |
 任务管理                         |     
-服务管理                         |                               
+服务管理                         |
+节点代理缓存                      |                               
 
 
 &nbsp;
@@ -82,6 +83,11 @@ select node_name, node_obj from t_node_info where present_state='active';
 11、获取节点版本
 ``` 
 select tars_version from t_node_info where node_name='';
+``` 
+
+12、查询节点obj
+``` 
+select node_obj from t_node_info where node_name='' and present_state='active'; 
 ```
 
 &nbsp;
@@ -165,6 +171,14 @@ ping节点                       |
 ######获取节点版本
 ``` 
 查询DB，参考sql[11]
+```
+######ping节点
+```
+根据节点obj查询节点代理缓存获取节点代，获取不到则查询DB获取节点obj，参考sql[12]，根据节点obj查询节点代理缓存获取节点代理，最后调用节点的tars_ping接口
+```
+######ping节点
+```
+根据节点obj查询节点代理缓存获取节点代，获取不到则查询DB获取节点obj，参考sql[12]，根据节点obj查询节点代理缓存获取节点代理，最后调用节点的shutdown接口
 ```
 
 &nbsp;

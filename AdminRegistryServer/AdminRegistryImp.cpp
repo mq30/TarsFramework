@@ -148,7 +148,7 @@ bool AdminRegistryImp::pingNode(const string & name, string & result, tars::Tars
 
 int AdminRegistryImp::shutdownNode(const string & name, string & result, tars::TarsCurrentPtr current)
 {
-    TLOGDEBUG("AdminRegistryImp::shutdownNode name:"<<name<<"|ip:port:"<<current->getIp()<<":"<<current->getPort()<<endl);
+    TLOGDEBUG("AdminRegistryImp::shutdownNode name:"<<name<<"|"<<current->getIp()<<":"<<current->getPort()<<endl);
     try
     {
         NodePrx nodePrx = _db.getNodePrx(name);
@@ -163,7 +163,8 @@ int AdminRegistryImp::shutdownNode(const string & name, string & result, tars::T
 
 vector<vector<string> > AdminRegistryImp::getAllServerIds(string & result, tars::TarsCurrentPtr current)
 {
-    TLOGDEBUG("AdminRegistryImp::getAllServerIds ip:port:"<<current->getIp()<<":"<<current->getPort()<<endl);
+    TLOGDEBUG("AdminRegistryImp::getAllServerIds "<<current->getIp()<<":"<<current->getPort()<<endl);
+    
     return _db.getAllServerIds(result);
 }
 
