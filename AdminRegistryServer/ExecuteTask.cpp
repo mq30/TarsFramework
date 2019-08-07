@@ -567,16 +567,13 @@ bool ExecuteTask::getTaskRsp(const string &taskNo, TaskRsp &taskRsp)
     TLOGDEBUG("ExecuteTask::getTaskRsp, taskNo=" << taskNo << endl);
 
     TC_ThreadLock::Lock lock(*this);
-
     map<string, TaskList*>::iterator it = _task.find(taskNo);
-
     if( it == _task.end())
     {
         return false;
     }
 
     taskRsp = (it->second)->getTaskRsp();
-
     ExecuteTask::getInstance()->checkTaskRspStatus(taskRsp);
 
     return true;

@@ -105,7 +105,7 @@ public:
      * @param serverName : 服务名
      * @param nodeName : 节点名
      * @param user : 操作用户名
-     * @param log : 备注信息
+     * @param log : 输出操作日志信息
      * @param current : 上下文信息
      * 
      * @return  0-成功 others-失败
@@ -226,7 +226,7 @@ public:
 
     /***********节点管理****************/
     /**
-     * 获取节点名列表
+     * 获取在线节点名列表
      *
      * @param out result : 结果描述
      * @param current : 上下文信息

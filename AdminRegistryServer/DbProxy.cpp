@@ -89,11 +89,10 @@ int DbProxy::addTaskReq(const TaskReq &taskReq)
 
 int DbProxy::getTaskRsp(const string &taskNo, TaskRsp &taskRsp)
 {
-
     try
     {
         string sql = "select * from t_task as t1, t_task_item as t2 where t1.task_no=t2.task_no and t2.task_no='" 
-            + _mysqlReg.escapeString(taskNo) + "'";
+                     + _mysqlReg.escapeString(taskNo) + "'";
 
         tars::TC_Mysql::MysqlData item = _mysqlReg.queryRecord(sql);
         if (item.size() == 0)
@@ -105,7 +104,6 @@ int DbProxy::getTaskRsp(const string &taskNo, TaskRsp &taskRsp)
         taskRsp.taskNo = item[0]["task_no"];
         taskRsp.serial = TC_Common::strto<int>(item[0]["serial"]);
         taskRsp.userName = item[0]["user_name"];
-
 
         for (unsigned i = 0; i < item.size(); i++) 
         {
@@ -131,7 +129,7 @@ int DbProxy::getTaskRsp(const string &taskNo, TaskRsp &taskRsp)
     }
     catch (TC_Mysql_Exception& ex)
     {
-        TLOGERROR("DbProxy::getTaskRsp exception"<<ex.what()<<endl);
+        TLOGERROR("DbProxy::getTaskRsp exception:"<<ex.what()<<endl);
         return -3;
     }
 
@@ -241,11 +239,8 @@ int DbProxy::undeploy(const string & application, const string & serverName, con
 
     try
     {
-
         _mysqlReg.deleteRecord("t_server_conf", where);
-
         _mysqlReg.deleteRecord("t_adapter_conf", where);
-
     }
     catch (exception &ex)
     {
@@ -262,11 +257,9 @@ map<string, string> DbProxy::getActiveNodeList(string& result)
     map<string, string> mapNodeList;
     try
     {
-        string sql =
-                      "select node_name, node_obj from t_node_info "
-                      "where present_state='active'";
-
+        string sql = "select node_name, node_obj from t_node_info where present_state='active'";
         tars::TC_Mysql::MysqlData res = _mysqlReg.queryRecord(sql);
+
         TLOGDEBUG("DbProxy::getActiveNodeList (present_state='active') affected:" << res.size() << endl);
         for (unsigned i = 0; i < res.size(); i++)
         {
@@ -281,6 +274,7 @@ map<string, string> DbProxy::getActiveNodeList(string& result)
 
     return  mapNodeList;
 }
+
 int DbProxy::setPatchInfo(const string& app, const string& serverName, const string& nodeName,
                           const string& version, const string& user)
 {
@@ -314,25 +308,24 @@ int DbProxy::getNodeVersion(const string& nodeName, string& version, string& res
 {
     try
     {
-        string sql =
-                      "select tars_version from t_node_info "
-                      "where node_name='" + _mysqlReg.escapeString(nodeName) + "'";
-
+        string sql = "select tars_version from t_node_info where node_name='" + _mysqlReg.escapeString(nodeName) + "'";
         tars::TC_Mysql::MysqlData res = _mysqlReg.queryRecord(sql);
+
         TLOGDEBUG(__FUNCTION__ << " (node_name='" << nodeName << "') affected:" << res.size() << endl);
         if (res.size() > 0)
         {
             version = res[0]["tars_version"];
             return 0;
-
         }
-        result = "node_name(" + nodeName + ") int table t_node_info not exist";
+
+        result = "node_name(" + nodeName + ") not exist";
     }
     catch (TC_Mysql_Exception& ex)
     {
         result = string(__FUNCTION__) + " exception: " + ex.what();
         TLOGERROR(result << endl);
     }
+
     return  -1;
 }
 
@@ -643,7 +636,6 @@ vector<string> DbProxy::getAllApplicationNames(string& result)
     }
 
     return vApps;
-
 }
 
 vector<vector<string> > DbProxy::getAllServerIds(string& result)
