@@ -61,6 +61,12 @@ pid_t Activator::activate(const string& strExePath, const string& strPwdPath, co
     pid_t pid = fork();
     if (pid == -1)
     {
+		for (i = 0; argv[i]; i++)
+        {
+            free(argv[i]);
+        }
+        free(argv);
+		
         TLOGDEBUG("Activator::activate "<< strPwdPath << "|fork child process  catch exception|errno=" << errno << endl);
         throw runtime_error("fork child process  catch exception");
     }
