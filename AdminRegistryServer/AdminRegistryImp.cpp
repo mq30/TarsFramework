@@ -27,7 +27,8 @@ void AdminRegistryImp::initialize()
     //初始化配置db连接
     _db.init(g_pconf);
 
-    _patchPrx = CommunicatorFactory::getInstance()->getCommunicator()->stringToProxy<PatchPrx>("tars.tarspatch.PatchObj");
+	string sPatchObj = g_pconf->get("/tars/objname<patchServerObj>", "tars.tarspatch.PatchObj");
+    _patchPrx = CommunicatorFactory::getInstance()->getCommunicator()->stringToProxy<PatchPrx>(sPatchObj);
 
     TLOGDEBUG("AdminRegistryImp init ok."<<endl);
 }
@@ -494,7 +495,7 @@ int AdminRegistryImp::notifyServer(const string & application, const string & se
 int AdminRegistryImp::batchPatch(const tars::PatchRequest & req, string & result, tars::TarsCurrentPtr current)
 {
     tars::PatchRequest reqPro = req;
-    reqPro.patchobj = (*g_pconf)["/tars/objname<patchServerObj>"];
+	reqPro.patchobj = g_pconf->get("/tars/objname<patchServerObj>", "tars.tarspatch.PatchObj");
 
     TLOGDEBUG("AdminRegistryImp::batchPatch "
                  << reqPro.appname + "." + reqPro.servername + "_" + reqPro.nodename << "|"

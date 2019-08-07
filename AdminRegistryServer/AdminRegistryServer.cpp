@@ -44,7 +44,7 @@ void AdminRegistryServer::initialize()
         _reapThread.start();
 
         //供admin client访问的对象
-        string adminObj = g_pconf->get("/tars/objname<AdminRegObjName>", "");
+        string adminObj = g_pconf->get("/tars/objname<AdminRegObjName>", "tars.tarsAdminRegistry.AdminRegObj");
         if(adminObj != "")
         {
             addServant<AdminRegistryImp>(adminObj);

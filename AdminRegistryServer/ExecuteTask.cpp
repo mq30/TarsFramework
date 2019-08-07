@@ -23,7 +23,7 @@ extern TC_Config * g_pconf;
 TaskList::TaskList(const TaskReq &taskReq)
 : _taskReq(taskReq)
 {
-    _adminPrx = CommunicatorFactory::getInstance()->getCommunicator()->stringToProxy<AdminRegPrx>(g_pconf->get("/tars/objname<AdminRegObjName>", ""));
+    _adminPrx = CommunicatorFactory::getInstance()->getCommunicator()->stringToProxy<AdminRegPrx>(g_pconf->get("/tars/objname<AdminRegObjName>", "tars.tarsAdminRegistry.AdminRegObj"));
 
     _taskRsp.taskNo   = _taskReq.taskNo;
     _taskRsp.serial   = _taskReq.serial;
