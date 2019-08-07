@@ -156,7 +156,7 @@ int AdminRegistryImp::shutdownNode(const string & name, string & result, tars::T
     }
     catch(TarsException & ex)
     {
-        TLOGERROR( "AdminRegistryImp::shutdownNode name:"<<( name + "|exception:" + ex.what())<<endl);
+        TLOGERROR( "AdminRegistryImp::shutdownNode name:"<< name << "|exception:" << ex.what()<<endl);
         return -1;
     }
 }
@@ -164,7 +164,7 @@ int AdminRegistryImp::shutdownNode(const string & name, string & result, tars::T
 vector<vector<string> > AdminRegistryImp::getAllServerIds(string & result, tars::TarsCurrentPtr current)
 {
     TLOGDEBUG("AdminRegistryImp::getAllServerIds "<<current->getIp()<<":"<<current->getPort()<<endl);
-    
+
     return _db.getAllServerIds(result);
 }
 
