@@ -301,9 +301,11 @@ void StatServer::destroyApp()
     for(int i = 0; i < 2; ++i)
     {
         delete [] _hashmap[i];
+		_hashmap[i] = NULL;
     }
 
     delete [] _hashmap;
+	_hashmap = NULL;
 
     TLOGDEBUG("StatServer::destroyApp ok" << endl);
 }

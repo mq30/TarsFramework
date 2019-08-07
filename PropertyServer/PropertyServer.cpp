@@ -278,12 +278,14 @@ void PropertyServer::destroyApp()
         if(_hashmap[i])
         {
             delete [] _hashmap[i];
+			_hashmap[i] = NULL;
         }
     }
 
     if(_hashmap)
     {
         delete [] _hashmap;
+		_hashmap = NULL;
     }
 
     TLOGDEBUG("PropertyServer::destroyApp ok" << endl);
