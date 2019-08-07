@@ -90,7 +90,7 @@ public:
      */
     enum
     {
-        REAP_INTERVAL = 5000, /**轮训入库间隔时间**/
+        REAP_INTERVAL = 5000, /**轮询入库间隔时间**/
     };
     /**
      * 构造
@@ -98,7 +98,7 @@ public:
     ReapSSDThread();
 
     /**
-     * 析够
+     * 析构
      */
     ~ReapSSDThread();
 
