@@ -345,19 +345,17 @@ int DbProxy::updateServerState(const string& app, const string& serverName, cons
         string sProcessIdSql = (stateFields == "present_state" ?
                                 (", process_id = " + TC_Common::tostr<int>(processId) + " ") : "");
 
-        string sql =
-                      "update t_server_conf "
+        string sql = "update t_server_conf "
                       "set " + stateFields + " = '" + etos(state) + "' " + sProcessIdSql +
                       "where application='" + _mysqlReg.escapeString(app) + "' "
                       "    and server_name='" + _mysqlReg.escapeString(serverName) + "' "
                       "    and node_name='" + _mysqlReg.escapeString(nodeName) + "' ";
-
         _mysqlReg.execute(sql);
+
         TLOGDEBUG(__FUNCTION__ << " " << app << "." << serverName << "_" << nodeName
                   << " affected:" << _mysqlReg.getAffectedRows()
                   << "|cost:" << (TC_TimeProvider::getInstance()->getNowMs() - iStart) << endl);
         return 0;
-
     }
     catch (TC_Mysql_Exception& ex)
     {
@@ -416,34 +414,29 @@ vector<ServerDescriptor> DbProxy::getServers(const string& app, const string& se
         if (serverName != "") sCondition += " and server.server_name='" + _mysqlReg.escapeString(serverName) + "' ";
         if (withDnsServer == false) sCondition += " and server.server_type !='tars_dns' "; //不获取dns服务
 
-//        "    allow_ip, max_connections, servant, queuecap, queuetimeout,protocol,handlegroup,shmkey,shmcap,"
-
-        sql =
-               "select server.application, server.server_name, server.node_name, base_path, "
-               "    exe_path, setting_state, present_state, adapter_name, thread_num, async_thread_num, endpoint,"
-               "    profile,template_name, "
-               "    allow_ip, max_connections, servant, queuecap, queuetimeout,protocol,handlegroup,"
-               "    patch_version, patch_time, patch_user, "
-               "    server_type, start_script_path, stop_script_path, monitor_script_path,config_center_port ,"
-               "     enable_set, set_name, set_area, set_group "
+        sql = "select server.application, server.server_name, server.node_name, base_path,"
+               "exe_path, setting_state, present_state, adapter_name, thread_num, async_thread_num, endpoint,"
+               "profile,template_name, "
+               "allow_ip, max_connections, servant, queuecap, queuetimeout,protocol,handlegroup,"
+               "patch_version, patch_time, patch_user, "
+               "server_type, start_script_path, stop_script_path, monitor_script_path,config_center_port ,"
+               "enable_set, set_name, set_area, set_group "
                "from t_server_conf as server "
-               "    left join t_adapter_conf as adapter using(application, server_name, node_name) "
+               "left join t_adapter_conf as adapter using(application, server_name, node_name) "
                "where " + sCondition;
 
         tars::TC_Mysql::MysqlData res = _mysqlReg.queryRecord(sql);
+
         num = res.size();
         //对应server在vector的下标
         map<string, int> mapAppServerTemp;
-
         //获取模版profile内容
         map<string, string> mapProfile;
 
         //分拆数据到server的信息结构里
         for (unsigned i = 0; i < res.size(); i++)
         {
-            string sServerId = res[i]["application"] + "." + res[i]["server_name"]
-                               + "_" + res[i]["node_name"];
-
+            string sServerId = res[i]["application"] + "." + res[i]["server_name"] + "_" + res[i]["node_name"];
             if (mapAppServerTemp.find(sServerId) == mapAppServerTemp.end())
             {
                 //server配置
@@ -486,6 +479,7 @@ vector<ServerDescriptor> DbProxy::getServers(const string& app, const string& se
                 {
                     iDefaultAsyncThreadNum = 0;
                 }
+
                 int iConfigAsyncThreadNum  = TC_Common::strto<int>(TC_Common::trim(res[i]["async_thread_num"]));
                 iDefaultAsyncThreadNum     = iConfigAsyncThreadNum > iDefaultAsyncThreadNum ? iConfigAsyncThreadNum : iDefaultAsyncThreadNum;
                 server.asyncThreadNum      = TC_Common::strto<int>(tProfile.get("/tars/application/client<asyncthread>", TC_Common::tostr(iDefaultAsyncThreadNum)));
@@ -536,7 +530,6 @@ vector<ServerDescriptor> DbProxy::getServers(const string& app, const string& se
               << "|cost:" << (TC_TimeProvider::getInstance()->getNowMs() - iStart) << endl);
 
     return  vServers;
-
 }
 
 int DbProxy::getNodeList(const string& app, const string& serverName, vector<string>& nodeNames)
@@ -643,8 +636,7 @@ vector<vector<string> > DbProxy::getAllServerIds(string& result)
     vector<vector<string> > vServers;
     try
     {
-        string sql =
-                      "select application, server_name, node_name, setting_state, present_state,server_type from t_server_conf";
+        string sql = "select application, server_name, node_name, setting_state, present_state,server_type from t_server_conf";
 
         tars::TC_Mysql::MysqlData res = _mysqlReg.queryRecord(sql);
         TLOGDEBUG(__FUNCTION__ << " affected:" << res.size() << endl);
@@ -666,8 +658,8 @@ vector<vector<string> > DbProxy::getAllServerIds(string& result)
     }
 
     return vServers;
-
 }
+
 int DbProxy::getGroupId(const string& ip)
 {
     bool bFind      = false;
@@ -741,6 +733,7 @@ int DbProxy::getGroupId(const string& ip)
     {
         TLOGERROR(__FUNCTION__ << " " << ex.what() << endl);
     }
+
     return -1;
 }
 

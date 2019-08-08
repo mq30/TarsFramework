@@ -10,8 +10,6 @@
 `/tars/nodeinfo<ping_node_timeout>` |ping节点超时时间，默认3000，单位毫秒
 
 
-&nbsp;
-
 ####功能项
 功能项|描述
 -------------------------------|----------------
@@ -23,8 +21,6 @@
 服务管理                         |
 节点代理缓存                      |                               
 
-
-&nbsp;
 
 ####sql语句
 
@@ -90,9 +86,33 @@ select tars_version from t_node_info where node_name='';
 select node_obj from t_node_info where node_name='' and present_state='active'; 
 ```
 
-&nbsp;
+13、获取服务列表
+``` 
+select application, server_name, node_name, setting_state, present_state,server_type from t_server_conf;
+```
+
+14、获取服务配置信息
+``` 
+select server.application, server.server_name, server.node_name, base_path,exe_path, setting_state, present_state, 
+       adapter_name, thread_num, async_thread_num, endpoint,profile,template_name,allow_ip, max_connections, servant, 
+       queuecap, queuetimeout,protocol,handlegroup,patch_version, patch_time, patch_user,server_type, start_script_path, 
+       stop_script_path, monitor_script_path,config_center_port,enable_set, set_name, set_area, set_group
+       from t_server_conf as server left join t_adapter_conf as adapter using(application, server_name, node_name)
+       where server.node_name='' [and server.application='' and server.server_name='' and server.server_type != 'tars_dns'];
+```
+
+15、更新服务的设置状态
+``` 
+update t_server_conf set setting_state='' where application='' and server_name='' and node_name='';
+```
+
+16、更新服务的在线状态
+``` 
+update t_server_conf set present_state='' where application='' and server_name='' and node_name='';
+```
 
 ####管理命令及其流程
+
 #####任务管理命令
 命令|描述
 -------------------------------|----------------
@@ -102,9 +122,8 @@ select node_obj from t_node_info where node_name='' and present_state='active';
 更新任务状态                      |
 任务管理                          | 
 
-&nbsp;
-
 #####任务流程
+
 ######请求执行任务
 ```
 保存任务信息到DB，参考sql[5]，成功保存到DB后，将任务放置入任务队列，等待执行
@@ -125,7 +144,6 @@ select node_obj from t_node_info where node_name='' and present_state='active';
 #####任务流程图
 [TODO]
 
-&nbsp;
 
 #####应用服务管理命令
 命令|描述
@@ -141,17 +159,62 @@ select node_obj from t_node_info where node_name='' and present_state='active';
 通知服务                        |
 加载服务信息                    |
 
-&nbsp;
-
 #####应用服务管理流程
+
 ######卸载服务流程
 ``` 
 删除服务DB记录信息，参考sql[4]。目前卸载服务并没有删除对应的安装包[TODO]
 ```
-######获取应用名列表
-查询DB，参考sql[9]
 
-&nbsp;
+######获取应用名列表
+```
+查询DB，参考sql[9]
+```
+
+######获取服务列表
+```
+查询DB，参考sql[13]
+```
+
+######获取特定服务状态
+```
+查询DB获取指定服务列表（异常情况可能保存了多条记录），只取第一条记录，参考sql[14]，然后获取节点代理，参考sql[12]，DB
+主要查询两个状态：settingStateInReg和presentStateInReg。然后调用节点接口async_getStateInfo（异步处理），异常情况下，
+同步调用接口getState和getServerPid，从节点获取到服务状态presentStateInNode和服务进程id，
+具体错误码可参考AdminReg.tars或者其自动生成的AdminReg.h文件
+```
+
+######获取特定ip所属group
+```
+优先从服务分组缓存信息查找，查不着不到则从服务分组规则缓存中校验是否匹配模式（支持完全匹配和模糊匹配）,
+其中服务分组规则由
+```
+
+######启动服务
+```
+更新DB服务的设置状态（active），参考sql[15]，获取节点代理，参考sql[12]，调用节点的startServer接口
+```
+
+######停止服务
+```
+更新DB服务的设置状态（inactive），参考sql[15]，获取节点代理，参考sql[12]，调用节点的stopServer接口
+```
+
+######重启服务
+```
+获取节点代理，参考sql[12]，调用节点的stopServer接口；更新DB服务的设置状态（active），参考sql[15]，获取节点代理，
+参考sql[12]，调用节点的startServer接口
+```
+
+######通知服务
+```
+获取节点代理，参考sql[12]，调用节点的notifyServer接口
+```
+
+######加载服务信息
+```
+获取节点代理，参考sql[12]，调用节点的loadServer接口
+```
 
 #####节点管理命令
 命令|描述
@@ -161,9 +224,8 @@ select node_obj from t_node_info where node_name='' and present_state='active';
 ping节点                       |
 停止节点                       |
 
-&nbsp;
-
 #####节点管理流程
+
 ######获取在线节点名列表
 ``` 
 查询DB，参考sql[10]
@@ -176,12 +238,10 @@ ping节点                       |
 ```
 根据节点obj查询节点代理缓存获取节点代，获取不到则查询DB获取节点obj，参考sql[12]，根据节点obj查询节点代理缓存获取节点代理，最后调用节点的tars_ping接口
 ```
-######ping节点
+######停止节点
 ```
 根据节点obj查询节点代理缓存获取节点代，获取不到则查询DB获取节点obj，参考sql[12]，根据节点obj查询节点代理缓存获取节点代理，最后调用节点的shutdown接口
 ```
-
-&nbsp;
 
 #####发布管理命令
 命令|描述
@@ -190,7 +250,6 @@ ping节点                       |
 更新发布状态                    |
 获取发布进度                     |
 
-&nbsp;
 
 #####配置模板管理命令
 命令|描述

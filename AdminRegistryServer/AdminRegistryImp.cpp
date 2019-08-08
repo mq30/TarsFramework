@@ -179,7 +179,7 @@ int AdminRegistryImp::getServerState(const string & application, const string & 
         server = _db.getServers(application, serverName, nodeName, true);
         if(server.size() == 0)
         {
-            TLOGERROR("AdminRegistryImp::getServerState svc:"<<(" '" + application  + "." + serverName + "_" + nodeName + "' no config")<<endl);
+            TLOGERROR("AdminRegistryImp::getServerState "<<"'"<<application<<"."<<serverName<<"_"<<nodeName<<"' no config"<<endl);
             return EM_TARS_LOAD_SERVICE_DESC_ERR;
         }
 
@@ -215,11 +215,11 @@ int AdminRegistryImp::getServerState(const string & application, const string & 
                     state.presentStateInNode = etos(stateInNode);
                     state.processId = nodePrx->getServerPid(application, serverName, result);
                 }
-                TLOGERROR("AdminRegistryImp::getServerState svc:"<<"'" + application + "." + serverName + "_" + nodeName<<"|exception:"<< e.what() <<endl);
+                TLOGERROR("AdminRegistryImp::getServerState "<<"'" + application + "." + serverName + "_" + nodeName<<"|exception:"<< e.what() <<endl);
             }
         }
 
-        TLOGDEBUG("AdminRegistryImp::getServerState svc:"  << application << "." << serverName << "_" << nodeName << "|ip:port:" << current->getIp() << ":" << current->getPort() <<endl);
+        TLOGDEBUG("AdminRegistryImp::getServerState "  << application << "." << serverName << "_" << nodeName << "|" << current->getIp() << ":" << current->getPort() <<endl);
 
         return EM_TARS_SUCCESS;
     }
@@ -268,7 +268,7 @@ int AdminRegistryImp::getGroupId(const string & ip, int &groupId, string &result
 int AdminRegistryImp::startServer(const string & application, const string & serverName, const string & nodeName, string & result, tars::TarsCurrentPtr current)
 {
     TLOGDEBUG("AdminRegistryImp::startServer: "<< application << "." << serverName << "_" << nodeName
-               << "|ip:port:" << current->getIp() << ":" << current->getPort() <<endl);
+               << "|" << current->getIp() << ":" << current->getPort() <<endl);
 
     int iRet = EM_TARS_UNKNOWN_ERR;
     try
@@ -281,13 +281,13 @@ int AdminRegistryImp::startServer(const string & application, const string & ser
         //判断是否为dns 非dns才需要到node启动服务
         if(server.size() != 0 && server[0].serverType == "tars_dns")
         {
-            TLOGINFO("AdminRegistryImp::startServer svc: '" + application  + "." + serverName + "_" + nodeName + "' is tars_dns server"<<endl);
+            TLOGINFO("AdminRegistryImp::startServer '"<<application<<"."<<serverName<<"_"<<nodeName<<"' is tars_dns server"<<endl);
             iRet = _db.updateServerState(application, serverName, nodeName, "present_state", tars::Active);
         }
         else
         {
             NodePrx nodePrx = _db.getNodePrx(nodeName);
-            TLOGINFO("AdminRegistryImp::startServer: svc:"<< application << "." << serverName << "_" << nodeName << "|ip port:" << current->getIp() << ":" << current->getPort() <<endl);
+            TLOGINFO("AdminRegistryImp::startServer: "<< application << "." << serverName << "_" << nodeName << "|" << current->getIp() << ":" << current->getPort() <<endl);
 
             current->setResponse(false);
             NodePrxCallbackPtr callback = new StartServerCallbackImp(application, serverName, nodeName, current);
@@ -300,19 +300,19 @@ int AdminRegistryImp::startServer(const string & application, const string & ser
     {
         current->setResponse(true);
         iRet = EM_TARS_CALL_NODE_TIMEOUT_ERR;
-        TLOGERROR("AdminRegistryImp::startServer svc:'"<<(application  + "." + serverName + "_" + nodeName+ "' TarsSyncCallTimeoutException:" + tex.what())<<endl);
+        TLOGERROR("AdminRegistryImp::startServer '"<<application << "." << serverName << "_" << nodeName << "' TarsSyncCallTimeoutException:" + tex.what()<<endl);
     }
     catch(TarsNodeNotRegistryException& re)
     {
         current->setResponse(true);
         iRet = EM_TARS_NODE_NOT_REGISTRY_ERR;
-        TLOGERROR("AdminRegistryImp::startServer svc:'"<<(application  + "." + serverName + "_" + nodeName + "' TarsNodeNotRegistryException:" + re.what())<<endl);
+        TLOGERROR("AdminRegistryImp::startServer '"<<application << "." << serverName << "_" << nodeName << "' TarsNodeNotRegistryException:" << re.what()<<endl);
     }
     catch(TarsException & ex)
     {
         current->setResponse(true);
         result = string(__FUNCTION__) + " '" + application  + "." + serverName + "_" + nodeName + "' TarsException:" + ex.what();
-        TLOGERROR("AdminRegistryImp::startServer '"<<(application  + "." + serverName + "_" + nodeName + "' TarsException:" + ex.what())<<endl);
+        TLOGERROR("AdminRegistryImp::startServer "<<result<<endl);
     }
 
     return iRet;
@@ -336,7 +336,7 @@ int AdminRegistryImp::stopServer(const string & application, const string & serv
             TLOGINFO("AdminRegistryImp::stopServer '" + application  + "." + serverName + "_" + nodeName + "' is tars_dns server"<<endl);
             iRet= _db.updateServerState(application, serverName, nodeName, "present_state", tars::Inactive);
             TLOGDEBUG("AdminRegistryImp::stopServer: " << application << "." << serverName << "_" << nodeName
-                << "|ip port:" << current->getIp() << ":" << current->getPort() << "|" << iRet <<endl);
+                      << "|" << current->getIp() << ":" << current->getPort() << "|" << iRet <<endl);
         }
         else
         {
@@ -372,7 +372,7 @@ int AdminRegistryImp::stopServer(const string & application, const string & serv
 
 int AdminRegistryImp::restartServer(const string & application, const string & serverName, const string & nodeName, string & result, tars::TarsCurrentPtr current)
 {
-    TLOGDEBUG(" AdminRegistryImp::restartServer: " << application << "." << serverName << "_" << nodeName << "|ip port" << current->getIp() << ":" << current->getPort() <<endl);
+    TLOGDEBUG(" AdminRegistryImp::restartServer: " << application << "." << serverName << "_" << nodeName << "|" << current->getIp() << ":" << current->getPort() <<endl);
 
     bool isDnsServer = false;
     int iRet = EM_TARS_SUCCESS;
@@ -628,7 +628,6 @@ int AdminRegistryImp::loadServer(const string & application, const string & serv
                 + "' exception:" + ex.what())<<endl);
         return EM_TARS_UNKNOWN_ERR;
     }
-
 }
 
 int AdminRegistryImp::getProfileTemplate(const std::string & profileName,std::string &profileTemplate, std::string & resultDesc, tars::TarsCurrentPtr current)
