@@ -8,6 +8,8 @@
 `/tars/reap<heartbeatoff>`          |是否关闭更新管理主控心跳时间，值[Y|N]，一般需要迁移时，设置此项为Y
 `/tars/objname<patchServerObj>`     |发布代理服务Obj，默认tars.tarspatch.PatchObj，建议按默认处理
 `/tars/nodeinfo<ping_node_timeout>` |ping节点超时时间，默认3000，单位毫秒
+`/tars/nodeinfo<batchpatch_node_timeout>` |批量发布节点超时时间，默认10000，单位毫秒
+`/tars/objname<AdminRegObjName>` |主控管理obj，默认tars.tarsAdminRegistry.AdminRegObj，建议按默认处理
 
 
 ####功能项
@@ -19,7 +21,10 @@
 定时更新所有主控状态              |
 任务管理                         |     
 服务管理                         |
-节点代理缓存                      |                               
+节点代理缓存                      |
+分组信息缓存                      |
+发布管理                           |
+节点管理                            |                               
 
 
 ####sql语句
@@ -109,6 +114,21 @@ update t_server_conf set setting_state='' where application='' and server_name='
 16、更新服务的在线状态
 ``` 
 update t_server_conf set present_state='' where application='' and server_name='' and node_name='';
+```
+
+17、获取发布文件信息
+``` 
+select tgz, md5 from t_server_patchs where id=0;
+```
+
+18、更新发布状态
+``` 
+update t_server_patchs set publish='1',publish_user='',publish_time=now(),lastuser='' where id=0;
+```
+
+19、获取模板内容
+``` 
+select template_name, parents_name, profile from t_profile_template where template_name='';
 ```
 
 ####管理命令及其流程
@@ -230,14 +250,17 @@ ping节点                       |
 ``` 
 查询DB，参考sql[10]
 ```
+
 ######获取节点版本
 ``` 
 查询DB，参考sql[11]
 ```
+
 ######ping节点
 ```
 根据节点obj查询节点代理缓存获取节点代，获取不到则查询DB获取节点obj，参考sql[12]，根据节点obj查询节点代理缓存获取节点代理，最后调用节点的tars_ping接口
 ```
+
 ######停止节点
 ```
 根据节点obj查询节点代理缓存获取节点代，获取不到则查询DB获取节点obj，参考sql[12]，根据节点obj查询节点代理缓存获取节点代理，最后调用节点的shutdown接口
@@ -248,9 +271,43 @@ ping节点                       |
 -------------------------------|----------------  
 批量发布                        |
 更新发布状态                    |
-获取发布进度                     |
+获取发布进度                    |
+预发布                          |[TODO]
+灰度发布                        |[TODO]
 
+#####发布管理流程
+
+######批量发布
+``` 
+查询DB获取发布文件名和checksum，参考sql[17]，调用发布代理的preparePatchFile接口让tarspatch准备发布文件，
+调用节点代理的async_patchPro进行发布
+```
+
+######更新发布状态
+``` 
+更新DB，参考sql[18]
+```
+
+######获取发布进度
+``` 
+调用节点代理的async_getPatchPercent获取发布进度
+```
 
 #####配置模板管理命令
 命令|描述
 -------------------------------|----------------  
+获取模板信息                   |
+获取服务模板信息               |
+
+#####配置模板管理流程
+
+######获取模板信息
+``` 
+查询DB，参考sql[19]
+```
+
+######获取服务模板信息
+``` 
+查询DB，参考sql[14]
+```
+

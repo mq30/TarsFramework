@@ -568,7 +568,6 @@ string DbProxy::getProfileTemplate(const string& sTemplateName, map<string, int>
     {
         string sql = "select template_name, parents_name, profile from t_profile_template "
                       "where template_name='" + _mysqlReg.escapeString(sTemplateName) + "'";
-
         tars::TC_Mysql::MysqlData res = _mysqlReg.queryRecord(sql);
 
         if (res.size() == 0)
@@ -899,8 +898,9 @@ int DbProxy::getInfoByPatchId(const string &patchId, string &patchFile, string &
     }
     catch (exception& ex)
     {
-        TLOGERROR(__FUNCTION__ << " " << ex.what() << endl);
+        TLOGERROR(__FUNCTION__ << " exception:" << ex.what() << endl);
     }
+
     return -1;
 }
 
@@ -909,7 +909,7 @@ int DbProxy::updatePatchByPatchId(const string &application, const string & serv
     try
     {
         string sql = "update t_server_patchs set publish='1',publish_user='" + user 
-            + "',publish_time=now(),lastuser='"+ user +"' where id=" + patchId;
+                     + "',publish_time=now(),lastuser='"+ user +"' where id=" + patchId;
 
         _mysqlReg.execute(sql);
 
@@ -921,8 +921,8 @@ int DbProxy::updatePatchByPatchId(const string &application, const string & serv
     }
     catch (exception& ex)
     {
-        TLOGERROR(__FUNCTION__ << " " << ex.what() << endl);
+        TLOGERROR(__FUNCTION__ << " exception:" << ex.what() << endl);
     }
+
     return -1;
 }
-

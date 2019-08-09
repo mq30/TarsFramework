@@ -482,7 +482,7 @@ void ExecuteTask::terminate()
 
 void ExecuteTask::run()
 {
-    const time_t diff = 2*60;//2分钟
+    const time_t diff = 5*60;//5分钟
     while (!_terminate)
     {
         {
@@ -504,10 +504,7 @@ void ExecuteTask::run()
             }
         }
 
-        {
-            TC_LockT<TC_ThreadLock> lock(*this);
-            timedWait(5*1000);
-        }
+        timedWait(6*1000);
     }
 }
 
@@ -532,29 +529,7 @@ int ExecuteTask::addTaskReq(const TaskReq &taskReq)
 
     {
         TC_ThreadLock::Lock lock(*this);
-
         _task[taskReq.taskNo] = p;
-
-        //删除历史数据, 当然最好是在定时独立做, 放在这里主要是途方便
-        map<string, TaskList*>::iterator it = _task.begin();
-        while (it != _task.end())
-        {
-            static time_t diff = 24 *60 *60;//1天
-            //大于两天数据任务就干掉
-            if(TC_TimeProvider::getInstance()->getNow() - it->second->getCreateTime() > diff)
-            {
-                TaskList *temp = it->second;
-
-                _task.erase(it++);
-
-                delete temp;
-                temp = NULL;
-            }
-            else
-            {
-                ++it;
-            }
-        }
     }
 
     p->execute();
@@ -578,7 +553,6 @@ bool ExecuteTask::getTaskRsp(const string &taskNo, TaskRsp &taskRsp)
 
     return true;
 }
-
 
 void ExecuteTask::checkTaskRspStatus(TaskRsp &taskRsp) 
 {

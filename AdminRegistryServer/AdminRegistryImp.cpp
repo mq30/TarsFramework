@@ -570,7 +570,7 @@ int AdminRegistryImp::getPatchPercent( const string& application, const string& 
     try
     {
         TLOGDEBUG( "AdminRegistryImp::getPatchPercent: " + application  + "." + serverName + "_" + nodeName
-                << "|caller: " << current->getIp()  << ":" << current->getPort() <<endl);
+                    << "|" << current->getIp()  << ":" << current->getPort() <<endl);
 
         NodePrx nodePrx = _db.getNodePrx(nodeName);
 
@@ -590,17 +590,17 @@ int AdminRegistryImp::getPatchPercent( const string& application, const string& 
         current->setResponse(true);
         iRet = EM_TARS_NODE_NOT_REGISTRY_ERR;
         TLOGERROR("AdminRegistryImp::getPatchPercent: '" <<(application  + "." + serverName + "_" + nodeName + " Caller:" + current->getIp() + ":" + TC_Common::tostr(current->getPort())
-                + "' TarsNodeNotRegistryException:" + rex.what())<<endl);
+                   + "' TarsNodeNotRegistryException:" + rex.what())<<endl);
     }
     catch(TarsException & ex)
     {
         current->setResponse(true);
         iRet = EM_TARS_UNKNOWN_ERR;
         TLOGERROR("AdminRegistryImp::getPatchPercent: '" <<(application  + "." + serverName + "_" + nodeName + " Caller:" + current->getIp() + ":" + TC_Common::tostr(current->getPort())
-                + "' TarsException:" + ex.what())<<endl);
+                   + "' TarsException:" + ex.what())<<endl);
     }
-    return iRet;
 
+    return iRet;
 }
 
 int AdminRegistryImp::loadServer(const string & application, const string & serverName, const string & nodeName, string & result, tars::TarsCurrentPtr current)
@@ -665,6 +665,7 @@ int AdminRegistryImp::getServerProfileTemplate(const string & application, const
                 + "' exception:" + ex.what();
         TLOGERROR(resultDesc << endl);
     }
+
     return iRet;
 }
 
@@ -850,7 +851,7 @@ void GetServerStateCallbackImp::callback_getStateInfo(tars::Int32 ret,  const ta
             TLOGWARN("GetServerStateCallbackImp::callback_getStateInfo_exception '" + _application + "." + _serverName + "_" + _nodeName<<"|"<< resultRef <<endl);
         }
     }
-    //        return EM_TARS_SUCCESS;
+
     AdminReg::async_response_getServerState(_current, EM_TARS_SUCCESS, _state, resultRef);
     TLOGDEBUG("GetServerStateCallbackImp::callback_getStateInfo_exception " <<"|position2|"<<"'" + _application  + "." + _serverName + "_" + _nodeName<<"|"<< ret << "|" << resultRef <<endl);
 

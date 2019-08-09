@@ -69,7 +69,6 @@ int AdminRegistryServer::loadServantEndpoint()
     for(iter = mapAdapterServant.begin(); iter != mapAdapterServant.end(); iter++ )
     {
         TC_Endpoint ep = getEpollServer()->getBindAdapter(iter->first)->getEndpoint();
-
         _mapServantEndpoint[iter->second] = ep.toString();
 
         TLOGDEBUG("registry obj: " << iter->second << " = " << ep.toString() <<endl);
@@ -81,10 +80,8 @@ int AdminRegistryServer::loadServantEndpoint()
 void AdminRegistryServer::destroyApp()
 {
     _reapThread.terminate();
-
     TLOGDEBUG("AdminRegistryServer::destroyApp ok" << endl);
 }
-
 
 int main(int argc, char *argv[])
 {
@@ -92,7 +89,6 @@ int main(int argc, char *argv[])
     {
         g_pconf =  & g_app.getConfig();
         g_app.main(argc, argv);
-
         g_app.waitForShutdown();
     }
     catch(exception &ex)
@@ -102,5 +98,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
-
